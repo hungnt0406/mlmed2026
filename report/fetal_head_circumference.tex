@@ -1,0 +1,134 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage[unicode]{hyperref}
+
+\title{Automated measurements of fetal head circumference}
+
+\author{
+\IEEEauthorblockN{Tran Ngoc Hung}
+\IEEEauthorblockA{
+23BI14181
+}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This project is aimed to apply deep learning method(YOLOV8s) to automatically measure the fetal head circumference given a 2D ultrasound image  
+\end{abstract}
+
+
+
+\section{Motivation}
+During pregnancy, ultrasound image is used to measure fetal biometrics. One of these measurements is the fetal head circumference(HC) that can be used to monitor growth of fetus. The HC is measured in specific cross section of fetal head.
+
+\section{Dataset Description}
+The data is divided into a training set of 999 images and a test set of 335 images. The size of each 2D ultrasound image is 800 by 540 pixels with a pixel size ranging from 0.052 to 0.326 mm. The pixel size for each image can be found in the csv files. The training set also includes an image with the manual annotation of the head circumference for each HC, which was made by a trained sonographer. The csv file 'training\_set\_pixel\_size\_and\_HC.csv ' includes the head circumference measurement (in millimeters) for each annotated HC in the training set.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{annotated_and_origin_img.png}
+    \caption{Annotated and origin image}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\begin{table}[H]
+\centering
+\label{tab:pixel_hc}
+\begin{tabular}{lcc}
+\hline
+\textbf{Filename} & \textbf{Pixel size (mm)} & \textbf{Head circumference (mm)} \\
+\hline
+000\_HC.png & 0.069136 & 44.30 \\
+001\_HC.png & 0.089659 & 56.81 \\
+002\_HC.png & 0.062033 & 68.75 \\
+003\_HC.png & 0.091291 & 69.00 \\
+004\_HC.png & 0.061240 & 59.81 \\
+005\_HC.png & 0.115814 & 69.80 \\
+\hline
+\end{tabular}
+\caption{Pixel size and head circumference}
+\end{table}  
+\section{Methodology}
+YOLOV8 small model segmentation is used because it provides high performance on real-time, but still mantains the high accuracy on fetal head segmentation.
+
+YOLOV8 returns the predicted mask for each fetal head. Then we try to find the contour of the mask that are list of boundary points of the head. Finally, we try to find the best fitting ellipse around the boundary points. Ramanujan's approximations \[
+P \approx \pi \left( 3(a+b) - \sqrt{(3a+b)(a+3b)} \right)
+\] is used to measure the perimeter of the fetal head.
+
+
+
+\section{Data Preprocessing}
+YOLOV8 requires polygon boundary coordinates normalized to image size. Hence, the annotated images is only thin outline, with the black pixel inside. We have to fill the contour for better polygon extraction.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{contourandfilled.png}
+    \caption{contour and filled contour}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\section{Results}
+
+\begin{table}[h]
+\centering
+
+\label{tab:mask_results}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@50} & \textbf{mAP@50--95} \\
+\hline
+head & 0.995 & 0.995 & 0.995 & 0.952 \\
+\hline
+\end{tabular}
+\caption{Segmentation performance (Mask metrics)}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{predictedtestset.png}
+    \caption{Predicted maskes on test set}
+    \label{fig:placeholder}
+\end{figure}
+\begin{table}[h]
+\centering
+\label{tab:reg_metrics}
+\begin{tabular}{ccc}
+\hline
+\textbf{RMSE} & \textbf{MAE} & \textbf{$R^2$} \\
+\hline
+0.8071 & 0.7532 & 0.9998 \\
+\hline
+\end{tabular}
+\caption{Performance metrics using Ramanujan's approximations}
+\end{table}
+
+The YOLOv8 segmentation model achieved near-perfect performance with a precision and recall of 0.995 and an mAP@50–95 of 0.952, indicating highly accurate description of fetal head boundaries.
+
+\section{Conclusion}
+This project demonstrates that deep learning(YOLO) can effectively measure fetal head circumference.
+
+
+
+\begin{thebibliography}{1}
+\bibitem{hc18}
+https://hc18.grand-challenge.org/
+\bibitem{paper}
+Thomas L. A. van den Heuvel, Dagmar de Bruijn, Chris L. de Korte and Bram van Ginneken. Automated measurement of fetal head circumference using 2D ultrasound images. PloS one, 13.8 (2018): e0200412.
+
+\bibitem{hc18dataset}
+Dataset: https://zenodo.org/records/1322001
+
+\bibitem{ultralyticsdocuments}
+https://docs.ultralytics.com/models/yolov8/#supported-tasks-and-modes
+
+\end{thebibliography}
+
+\end{document}
