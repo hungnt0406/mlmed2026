@@ -1,0 +1,95 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{float}
+\usepackage[unicode]{hyperref}
+
+\title{Automated COVID-19 infection localization from chest X-ray images}
+
+\author{
+\IEEEauthorblockN{Tran Ngoc Hung}
+\IEEEauthorblockA{
+23BI14181
+}
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This project is aimed to apply deep learning method(YOLOV11) to automatically separate the infection area of COVID-19 patient's lung.  
+\end{abstract}
+
+
+\section{Motivation}
+The immense spread of coronavirus disease 2019 (COVID-19) has left healthcare systems incapable to diagnose and test patients at the required rate. Computer-aided diagnosis for the reliable and fast detection of coronavirus disease (COVID-19) has become a necessity to prevent the spread of the virus during the pandemic to ease the burden on the healthcare system.
+
+\section{Dataset Description-COVID-QU-Ex Dataset}
+The researchers of Qatar University have compiled the COVID-QU Ex dataset, which consists of 33.920 chest X-ray (CXR) images including: 11.956 COVID-19, 11.263 Non-COVID infections (Viral or Bacterial Pneumonia) and 10.701 Normal.
+The experiments were conducted on two CXR sets, but we just use the COVID-19 Infection Segmentation Data that is a subset of COVID-QU-Ex dataset 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{xrayandmask.png}
+    \caption{X-ray image and infection area}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Methodology}
+YOLOV11 small model segmentation is used because it provides high performance on real-time, but still mantains the high accuracy on infection area.
+
+\section{Data Preprocessing}
+YOLOV11 requires polygon boundary coordinates normalized to the image size. Basically, we have to convert the infection mask to a list of coordinate points around the mask, so the yolo model can read it.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{contour.png}
+    \caption{Points around infection mask}
+    \label{fig:placeholder}
+\end{figure}
+
+
+\section{Results}
+
+\begin{table}[h]
+\centering
+
+\label{tab:mask_results}
+\begin{tabular}{lcccc}
+\hline
+\textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{mAP@50} & \textbf{mAP@50--95} \\
+\hline
+infection area & 0.81 & 0.704 & 0.7942  & 0.509 \\
+\hline
+\end{tabular}
+\caption{Segmentation performance (Mask metrics)}
+\end{table}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{testset.png}
+    \caption{predicted mask on the test set}
+    \label{fig:placeholder}
+\end{figure}
+
+We can see the over-segmenatation and reduced confidence on very small areas. However, the model still provides the strong performance in identifying infection regions. The predicted masks  closely follow ground truth annotations.
+
+
+
+\begin{thebibliography}{1}
+\bibitem{hc18}
+https://hc18.grand-challenge.org/
+\bibitem{paper}
+Thomas L. A. van den Heuvel, Dagmar de Bruijn, Chris L. de Korte and Bram van Ginneken. Automated measurement of fetal head circumference using 2D ultrasound images. PloS one, 13.8 (2018): e0200412.
+
+\bibitem{dataset}
+Dataset: https://www.kaggle.com/datasets/anasmohammedtahir/covidqu
+
+\bibitem{ultralyticsdocuments}
+https://docs.ultralytics.com/vi/models/yolo11/
+\bibitem{paper}
+https://www.sciencedirect.com/science/article/pii/S0010482521007964?via\%3Dihub
+\end{thebibliography}
+
+\end{document}
